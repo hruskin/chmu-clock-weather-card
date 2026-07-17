@@ -52,6 +52,23 @@ export class ChmuAlertBar extends LitElement {
 
   @state() private dialogOpen = false
 
+  // Karta (ha-card) má vlastní action handler (tap = more-info počasí).
+  // Kliky uvnitř alert baru i dialogu nesmí probublat, jinak se otevřou
+  // dva popupy najednou.
+  private readonly stopProp = (e: Event): void => { e.stopPropagation() }
+
+  public connectedCallback (): void {
+    super.connectedCallback()
+    this.addEventListener('click', this.stopProp)
+    this.addEventListener('keydown', this.stopProp)
+  }
+
+  public disconnectedCallback (): void {
+    this.removeEventListener('click', this.stopProp)
+    this.removeEventListener('keydown', this.stopProp)
+    super.disconnectedCallback()
+  }
+
   protected render (): TemplateResult | typeof nothing {
     const entity = this.hass?.states[this.entityId]
     if (!entity || entity.state !== 'on') {

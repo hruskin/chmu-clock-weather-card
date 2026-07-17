@@ -13,6 +13,7 @@ export default [
     output: {
       dir: 'dist',
       format: 'es',
+      entryFileNames: 'chmu-clock-weather-card.js',
     },
     plugins: [
       image(),

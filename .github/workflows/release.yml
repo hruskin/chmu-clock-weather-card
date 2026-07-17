@@ -1,12 +1,17 @@
 name: Release
 
+# Push tagu vX.Y.Z -> build + GitHub Release s dist souborem (pro HACS)
 on:
-  release:
-    types: [published]
+  push:
+    tags: ["v*"]
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
 
 jobs:
   release:
-    name: Prepare release
+    name: Build and release
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -17,23 +22,14 @@ jobs:
         with:
           node-version: 24
 
-      - name: Build the file
+      - name: Build
         run: |
-          cd /home/runner/work/clock-weather-card/clock-weather-card
-          yarn install
+          corepack enable
+          yarn install --frozen-lockfile
           yarn build
 
-      - name: Upload zip to release
-        uses: svenstaro/upload-release-action@v1-release
-
+      - name: Create release with asset
+        uses: softprops/action-gh-release@v2
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: /home/runner/work/clock-weather-card/clock-weather-card/dist/clock-weather-card.js
-          asset_name: clock-weather-card.js
-          tag: ${{ github.ref }}
-          overwrite: true
-
-      - name: Verify HACS compliance
-        uses: hacs/action@main
-        with:
-          category: plugin
+          files: dist/chmu-clock-weather-card.js
+          generate_release_notes: true

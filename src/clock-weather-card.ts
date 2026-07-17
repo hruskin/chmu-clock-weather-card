@@ -32,9 +32,10 @@ import { animatedIcons, staticIcons } from './images'
 import { version } from '../package.json'
 import { safeRender } from './helpers'
 import { DateTime } from 'luxon'
+import './alerts'
 
 console.info(
-  `%c  CLOCK-WEATHER-CARD \n%c Version: ${version}`,
+  `%c  CHMU-CLOCK-WEATHER-CARD \n%c Version: ${version}`,
   'color: orange; font-weight: bold; background: black',
   'color: white; font-weight: bold; background: dimgray'
 );
@@ -44,9 +45,9 @@ console.info(
 (window as any).customCards = (window as any).customCards || [];
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 (window as any).customCards.push({
-  type: 'clock-weather-card',
-  name: 'Clock Weather Card',
-  description: 'Shows the current date/time in combination with the current weather and an iOS insipired weather forecast.'
+  type: 'chmu-clock-weather-card',
+  name: 'ČHMÚ Clock Weather Card',
+  description: 'Fork of clock-weather-card with ČHMÚ weather alerts (alert_entity).'
 })
 
 const gradientMap: Map<number, Rgb> = new Map()
@@ -58,7 +59,7 @@ const gradientMap: Map<number, Rgb> = new Map()
   .set(30, new Rgb(255, 150, 79)) // orange
   .set(40, new Rgb(255, 192, 159)) // red
 
-@customElement('clock-weather-card')
+@customElement('chmu-clock-weather-card')
 export class ClockWeatherCard extends LitElement {
   // https://lit.dev/docs/components/properties/
   @property({ attribute: false }) public hass!: HomeAssistant
@@ -170,6 +171,14 @@ export class ClockWeatherCard extends LitElement {
           </div>`
         : ''}
         <div class="card-content">
+          ${this.config.alert_entity
+        ? html`
+            <chmu-alert-bar
+              .hass=${this.hass}
+              .entityId=${this.config.alert_entity}
+              .locale=${this.config.locale}
+            ></chmu-alert-bar>`
+        : ''}
           ${showToday
         ? html`
             <clock-weather-card-today>

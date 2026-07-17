@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<title>chmu-alert-bar harness</title>
+<style>
+  body { font-family: system-ui, sans-serif; background: #f2f4f8; margin: 2rem; }
+  .card { max-width: 420px; background: white; border-radius: 12px; padding: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,.12); }
+  :root {
+    --primary-text-color: #1c1c1c;
+    --secondary-text-color: #6b7280;
+  }
+  h1 { font-size: 1rem; color: #444; }
+</style>
+</head>
+<body>
+<h1>Harness: chmu-alert-bar (stub ha-icon / ha-dialog)</h1>
+<div class="card">
+  <chmu-alert-bar id="bar"></chmu-alert-bar>
+  <div style="color:#888; font-size:.9rem">… tady by pokračovala clock-weather-card …</div>
+</div>
+
+<script>
+  // Stubs za HA frontend elementy (v harness nejsou k dispozici)
+  customElements.define('ha-icon', class extends HTMLElement {
+    set icon (v) { this._i = v; this.render() }
+    get icon () { return this._i }
+    static get observedAttributes () { return ['icon'] }
+    attributeChangedCallback (n, o, v) { this._i = v; this.render() }
+    render () {
+      const map = {
+        'mdi:sun-thermometer': '🌡️', 'mdi:weather-lightning': '⛈️',
+        'mdi:chevron-right': '›', 'mdi:alert': '⚠️'
+      }
+      this.textContent = map[this._i] ?? '●'
+    }
+  })
+  customElements.define('ha-dialog', class extends HTMLElement {
+    connectedCallback () {
+      this.style.cssText = 'display:block;position:fixed;inset:10% 20%;background:white;border:2px solid #888;border-radius:12px;padding:1rem;overflow:auto;z-index:10;box-shadow:0 8px 40px rgba(0,0,0,.35)'
+      const h = document.createElement('div')
+      h.textContent = this.heading ?? this.getAttribute('heading') ?? ''
+      h.style.cssText = 'font-weight:700;font-size:1.1rem;margin-bottom:.75rem'
+      this.prepend(h)
+      const close = document.createElement('button')
+      close.textContent = 'Zavřít (stub)'
+      close.onclick = () => this.dispatchEvent(new CustomEvent('closed'))
+      this.append(close)
+    }
+  })
+</script>
+<script type="module">
+  import '../dist/chmu-clock-weather-card.js'
+
+  const attrs = {
+    alert_count: 2,
+    severity: 'Moderate',
+    color: 'orange',
+    headline: 'Zátěž teplem · Bouřky',
+    alert_icon: 'mdi:sun-thermometer',
+    area: 'Středočeský kraj',
+    orp: 'Říčany',
+    alerts: [
+      {
+        label: 'Zátěž teplem', icon: 'mdi:sun-thermometer', severity: 'Moderate',
+        description: 'Očekáváme silnou zátěž teplem. Riziko přehřátí a dehydratace.',
+        instruction: 'Držet se ve stínu, dodržovat pitný režim.',
+        start: '2026-07-17T08:53:33+00:00', end: '2026-07-17T17:00:00+00:00'
+      },
+      {
+        label: 'Bouřky', icon: 'mdi:weather-lightning', severity: 'Severe',
+        description: 'Riziko silných bouřek s přívalovým deštěm kolem 40 mm.',
+        instruction: 'Nezdržovat se pod stromy.',
+        start: '2026-07-17T11:00:00+00:00', end: '2026-07-17T22:00:00+00:00'
+      }
+    ]
+  }
+
+  const bar = document.getElementById('bar')
+  bar.hass = { states: { 'binary_sensor.test': { state: 'on', attributes: attrs } } }
+  bar.entityId = 'binary_sensor.test'
+  bar.locale = 'cs'
+</script>
+</body>
+</html>

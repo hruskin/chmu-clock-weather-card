@@ -5,6 +5,11 @@ Fork karty [clock-weather-card](https://github.com/pkissling/clock-weather-card)
 a rozklikávací popup s plnými texty výstrah. Navrženo pro integraci
 [ha-chmu-meteogram](https://github.com/hruskin/ha-chmu-meteogram) (>= 0.5.0).
 
+![Základ karty (upstream clock-weather-card)](.github/assets/card.gif)
+
+*(GIF ukazuje upstream základ; fork navíc zobrazuje barevný proužek výstrah
+nad sekcí počasí a po kliknutí popup s plnými texty.)*
+
 ## Co přidává oproti originálu
 
 - `alert_entity` — binary_sensor výstrah z integrace ha-chmu-meteogram

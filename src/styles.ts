@@ -146,6 +146,7 @@ export default css`
   ha-card.compact .card-content {
     padding-top: 8px;
     padding-bottom: 8px;
+    container-type: inline-size;
   }
 
   .compact-today {
@@ -158,20 +159,34 @@ export default css`
   .compact-today .compact-right {
     display: flex;
     align-items: center;
-    gap: 0.9rem;
+    gap: clamp(0.4rem, 2cqw, 0.8rem);
     margin-left: auto;
   }
 
   .compact-today .compact-clock-text,
   .compact-today .compact-temp {
     font-size: 3rem;
+    font-size: clamp(1.5rem, 8.6cqw, 3rem);
     line-height: 1.15;
     white-space: nowrap;
   }
 
   .compact-today .compact-icon {
     height: 3.6rem;
+    height: clamp(2.2rem, 10cqw, 3.6rem);
     width: auto;
+  }
+
+  .compact-today .compact-stack {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.15rem;
+    font-size: 1.25rem;
+    font-size: clamp(0.9rem, 4.2cqw, 1.25rem);
+    line-height: 1.15;
+    white-space: nowrap;
+    color: var(--secondary-text-color);
   }
 
   ha-card.compact clock-weather-card-forecast-row {

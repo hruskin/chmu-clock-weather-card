@@ -33,6 +33,7 @@ import { version } from '../package.json'
 import { safeRender } from './helpers'
 import { DateTime } from 'luxon'
 import './alerts'
+import './editor'
 
 console.info(
   `%c  CHMU-CLOCK-WEATHER-CARD \n%c Version: ${version}`,
@@ -77,6 +78,11 @@ export class ClockWeatherCard extends LitElement {
     const msToNextSecond = (1000 - this.currentDate.millisecond)
     setTimeout(() => setInterval(() => { this.currentDate = DateTime.now() }, 1000), msToNextSecond)
     setTimeout(() => { this.currentDate = DateTime.now() }, msToNextSecond)
+  }
+
+  // fork: GUI editor (ha-form)
+  public static getConfigElement (): HTMLElement {
+    return document.createElement('chmu-clock-weather-card-editor')
   }
 
   public static getStubConfig (_hass: HomeAssistant, entities: string[], entitiesFallback: string[]): Record<string, unknown> {
@@ -274,7 +280,7 @@ export class ClockWeatherCard extends LitElement {
       </clock-weather-card-today-right>`
   }
 
-  // fork: compact today = jeden řádek "hodiny | ikona | teplota | chips"
+  // fork: compact today = jeden řádek "hodiny | … | chips ikona teplota vlhkost/tlak"
   private renderTodayCompact (): TemplateResult {
     const weather = this.getWeather()
     const state = weather.state
@@ -283,10 +289,23 @@ export class ClockWeatherCard extends LitElement {
     const iconType = this.config.weather_icon_type
     const icon = this.toIcon(state, iconType, false, this.getIconAnimationKind())
     const localizedTemp = temp !== null ? this.toConfiguredTempWithUnit(tempUnit, temp) : null
+    const humidity = roundIfNotNull(this.getCurrentHumidity())
+    const extraAttrs = weather.attributes as { pressure?: number, pressure_unit?: string }
+    const pressure = extraAttrs.pressure != null ? Math.round(extraAttrs.pressure) : null
+    const pressureUnit = extraAttrs.pressure_unit ?? 'hPa'
 
     return html`
       ${this.config.hide_clock ? '' : html`<div class="compact-clock-text">${this.time()}</div>`}
       <div class="compact-right">
+        <img class="compact-icon" src=${icon} />
+        ${localizedTemp ? html`<div class="compact-temp">${localizedTemp}</div>` : ''}
+        ${humidity !== null || pressure !== null
+          ? html`
+            <div class="compact-stack">
+              ${humidity !== null ? html`<span>${humidity}%</span>` : ''}
+              ${pressure !== null ? html`<span>${pressure} ${pressureUnit}</span>` : ''}
+            </div>`
+          : ''}
         ${this.config.alert_entity && this.config.alert_display === 'icons'
           ? html`
             <chmu-alert-bar
@@ -296,8 +315,6 @@ export class ClockWeatherCard extends LitElement {
               .locale=${this.config.locale}
             ></chmu-alert-bar>`
           : ''}
-        <img class="compact-icon" src=${icon} />
-        ${localizedTemp ? html`<div class="compact-temp">${localizedTemp}</div>` : ''}
       </div>
     `
   }

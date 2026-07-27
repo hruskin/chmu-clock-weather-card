@@ -13,10 +13,16 @@ nad sekcí počasí a po kliknutí popup s plnými texty.)*
 ## Co přidává oproti originálu
 
 - `alert_entity` — binary_sensor výstrah z integrace ha-chmu-meteogram
-- Když je výstraha aktivní, nad sekcí počasí se ukáže proužek: ikona jevu,
-  počet výstrah a titulek („Zátěž teplem · Bouřky"), barva dle závažnosti
-- Klik/tap na proužek otevře nativní `ha-dialog` s detailem každé výstrahy:
+- **Výstrahy jako ikonky** (`alert_display: icons`, výchozí): kruhové ikonky
+  obarvené podle závažnosti, zabírají nulovou výšku navíc. `alert_display: bar`
+  zobrazí místo nich proužek přes celou šířku s titulkem („Zátěž teplem · Bouřky")
+- Klik/tap otevře nativní `ha-dialog` s detailem každé výstrahy:
   název, závažnost, platnost od–do, popis a doporučení
+- **`compact: true`** — horní sekce se smrskne do jednoho řádku: velké hodiny
+  vlevo, vpravo ikonky výstrah · ikona počasí · velká teplota · vlhkost a tlak
+  (poloviční velikost, pod sebou). Písmo se plynule přizpůsobuje šířce karty.
+  Řádky předpovědi zůstávají beze změny
+- **GUI editor** — kartu lze nastavit klikáním, bez psaní YAML
 - Bez výstrahy se karta chová přesně jako originál
 - Žádná závislost na browser_mod
 
@@ -34,13 +40,26 @@ originál, takže obě karty mohou být nainstalované vedle sebe.
 
 ## Konfigurace
 
+Nejjednodušší je použít **GUI editor** (Přidat kartu → ČHMÚ Clock Weather Card).
+YAML ekvivalent:
+
 ```yaml
 type: custom:chmu-clock-weather-card
 entity: weather.chmu_home_predpoved
 alert_entity: binary_sensor.chmu_home_vystrahy_chmu
+compact: true
 locale: cs
 hourly_forecast: true
 ```
+
+| Volba | Výchozí | Popis |
+|---|---|---|
+| `alert_entity` | — | binary_sensor výstrah; bez něj se výstrahy nezobrazují |
+| `alert_display` | `icons` | `icons` = ikonky, `bar` = proužek přes šířku |
+| `compact` | `false` | jednořádková horní sekce s vlhkostí a tlakem |
+
+Vlhkost a tlak se v compact režimu berou z atributů weather entity
+(`humidity`, `pressure`); pokud je entita nemá, sloupec se nezobrazí.
 
 `alert_entity` je volitelné — bez něj se karta chová jako upstream verze.
 Očekává atributy `alert_count`, `headline`, `color`, `alert_icon` a `alerts[]`

@@ -154,8 +154,12 @@ export class ClockWeatherCard extends LitElement {
 
     const showToday = !this.config.hide_today_section
     const showForecast = !this.config.hide_forecast_section
+    // Ikonky výstrah žijí v today sekci; bez ní spadnou na proužek
+    const alertsAsIcons = this.config.alert_display === 'icons' && showToday
+    const cardClass = this.config.compact ? 'compact' : ''
     return html`
       <ha-card
+        class=${cardClass}
         @action=${(e: ActionHandlerEvent) => { this.handleAction(e) }}
         .actionHandler=${actionHandler({
       hasHold: hasAction(this.config.hold_action as ActionConfig | undefined),
@@ -171,7 +175,7 @@ export class ClockWeatherCard extends LitElement {
           </div>`
         : ''}
         <div class="card-content">
-          ${this.config.alert_entity
+          ${this.config.alert_entity && !alertsAsIcons
         ? html`
             <chmu-alert-bar
               .hass=${this.hass}
@@ -180,7 +184,12 @@ export class ClockWeatherCard extends LitElement {
             ></chmu-alert-bar>`
         : ''}
           ${showToday
-        ? html`
+        ? this.config.compact
+          ? html`
+            <div class="compact-today">
+              ${safeRender(() => this.renderTodayCompact())}
+            </div>`
+          : html`
             <clock-weather-card-today>
               ${safeRender(() => this.renderToday())}
             </clock-weather-card-today>`
@@ -251,9 +260,46 @@ export class ClockWeatherCard extends LitElement {
           </clock-weather-card-today-right-wrap-center>
           <clock-weather-card-today-right-wrap-bottom>
             ${this.config.hide_date ? '' : this.date()}
+            ${this.config.alert_entity && this.config.alert_display === 'icons'
+              ? html`
+                <chmu-alert-bar
+                  variant="chips"
+                  .hass=${this.hass}
+                  .entityId=${this.config.alert_entity}
+                  .locale=${this.config.locale}
+                ></chmu-alert-bar>`
+              : ''}
           </clock-weather-card-today-right-wrap-bottom>
         </clock-weather-card-today-right-wrap>
       </clock-weather-card-today-right>`
+  }
+
+  // fork: compact today = jeden řádek "hodiny | ikona | teplota | chips"
+  private renderTodayCompact (): TemplateResult {
+    const weather = this.getWeather()
+    const state = weather.state
+    const temp = this.config.show_decimal ? this.getCurrentTemperature() : roundIfNotNull(this.getCurrentTemperature())
+    const tempUnit = weather.attributes.temperature_unit
+    const iconType = this.config.weather_icon_type
+    const icon = this.toIcon(state, iconType, false, this.getIconAnimationKind())
+    const localizedTemp = temp !== null ? this.toConfiguredTempWithUnit(tempUnit, temp) : null
+
+    return html`
+      ${this.config.hide_clock ? '' : html`<div class="compact-clock-text">${this.time()}</div>`}
+      <div class="compact-right">
+        ${this.config.alert_entity && this.config.alert_display === 'icons'
+          ? html`
+            <chmu-alert-bar
+              variant="chips"
+              .hass=${this.hass}
+              .entityId=${this.config.alert_entity}
+              .locale=${this.config.locale}
+            ></chmu-alert-bar>`
+          : ''}
+        <img class="compact-icon" src=${icon} />
+        ${localizedTemp ? html`<div class="compact-temp">${localizedTemp}</div>` : ''}
+      </div>
+    `
   }
 
   private renderForecast (): TemplateResult[] {
@@ -475,7 +521,9 @@ export class ClockWeatherCard extends LitElement {
       time_zone: config.time_zone ?? undefined,
       show_decimal: config.show_decimal ?? false,
       apparent_sensor: config.apparent_sensor ?? undefined,
-      aqi_sensor: config.aqi_sensor ?? undefined
+      aqi_sensor: config.aqi_sensor ?? undefined,
+      alert_display: config.alert_display ?? 'icons',
+      compact: config.compact ?? false
     }
   }
 

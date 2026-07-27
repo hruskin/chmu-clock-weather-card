@@ -130,4 +130,51 @@ export default css`
     padding: 2px;
     border-radius: 5px;
   }
+
+  /* --- fork: řádek s datem nese i ikonky výstrah --- */
+  clock-weather-card-today-right-wrap-bottom {
+    align-items: center;
+  }
+
+  /* --- fork: kompaktní režim (compact: true) ---
+     Today sekci nahrazuje jeden řádek: velké hodiny, ikona počasí,
+     velká teplota (stejná velikost jako hodiny), ikonky výstrah vpravo. */
+  ha-card.compact {
+    --bar-height: 1.2rem;
+  }
+
+  ha-card.compact .card-content {
+    padding-top: 8px;
+    padding-bottom: 8px;
+  }
+
+  .compact-today {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .compact-today .compact-right {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin-left: auto;
+  }
+
+  .compact-today .compact-clock-text,
+  .compact-today .compact-temp {
+    font-size: 3rem;
+    line-height: 1.15;
+    white-space: nowrap;
+  }
+
+  .compact-today .compact-icon {
+    height: 3.6rem;
+    width: auto;
+  }
+
+  ha-card.compact clock-weather-card-forecast-row {
+    grid-gap: 0.35rem;
+  }
 `

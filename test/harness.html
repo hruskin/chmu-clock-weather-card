@@ -20,6 +20,21 @@
   <div style="color:#888; font-size:.9rem">… tady by pokračovala clock-weather-card …</div>
 </div>
 
+<h1 style="margin-top:2rem">Varianta chips (compact řádek)</h1>
+<div class="card">
+  <div style="display:flex; align-items:center; gap:1rem">
+    <div style="font-size:3rem; line-height:1.15">18:24</div>
+    <div style="font-size:3rem">☁️</div>
+    <div style="font-size:3rem; line-height:1.15">24,8°</div>
+    <chmu-alert-bar id="chips" variant="chips"></chmu-alert-bar>
+  </div>
+</div>
+
+<h1 style="margin-top:2rem">Skutečná karta (compact: true)</h1>
+<div class="card" id="realcard-wrap" style="max-width:420px">
+  <chmu-clock-weather-card id="realcard"></chmu-clock-weather-card>
+</div>
+
 <script>
   // Stubs za HA frontend elementy (v harness nejsou k dispozici)
   customElements.define('ha-icon', class extends HTMLElement {
@@ -76,10 +91,57 @@
     ]
   }
 
-  const bar = document.getElementById('bar')
-  bar.hass = { states: { 'binary_sensor.test': { state: 'on', attributes: attrs } } }
-  bar.entityId = 'binary_sensor.test'
-  bar.locale = 'cs'
+  const hass = { states: { 'binary_sensor.test': { state: 'on', attributes: attrs } } }
+  for (const id of ['bar', 'chips']) {
+    const el = document.getElementById(id)
+    el.hass = hass
+    el.entityId = 'binary_sensor.test'
+    el.locale = 'cs'
+  }
+
+  // --- skutečná karta se stubovaným hass ---
+  const day = 24 * 3600 * 1000
+  const forecast = [0, 1, 2, 3, 4].map(i => ({
+    datetime: new Date(Date.now() + i * day).toISOString(),
+    condition: ['rainy', 'cloudy', 'rainy', 'sunny', 'cloudy'][i],
+    temperature: [27, 23, 19, 20, 18][i],
+    templow: [17, 15, 11, 11, 11][i],
+    precipitation: [2, 1, 3, 0, 0][i],
+    precipitation_probability: [80, 40, 90, 5, 10][i]
+  }))
+  const cardHass = {
+    locale: { language: 'cs', time_format: '24' },
+    config: { unit_system: { temperature: '°C' } },
+    states: {
+      'weather.test': {
+        entity_id: 'weather.test',
+        state: 'rainy',
+        attributes: {
+          temperature: 24.8,
+          temperature_unit: '°C',
+          humidity: 63,
+          precipitation_unit: 'mm',
+          supported_features: 1
+        }
+      },
+      'binary_sensor.test': { state: 'on', attributes: attrs }
+    },
+    connection: {
+      subscribeMessage: async (cb, _msg) => {
+        setTimeout(() => cb({ type: 'daily', forecast }), 50)
+        return async () => {}
+      }
+    }
+  }
+  const card = document.getElementById('realcard')
+  card.setConfig({
+    entity: 'weather.test',
+    alert_entity: 'binary_sensor.test',
+    compact: true,
+    locale: 'cs',
+    forecast_rows: 5
+  })
+  card.hass = cardHass
 </script>
 </body>
 </html>

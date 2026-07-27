@@ -44,11 +44,15 @@ const NAMED_COLORS: Record<string, string> = {
   purple: SEVERITY_COLORS.Extreme
 }
 
+const MAX_CHIPS = 4
+
 @customElement('chmu-alert-bar')
 export class ChmuAlertBar extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant
   @property() public entityId!: string
   @property() public locale?: string
+  // 'bar' = plný proužek, 'chips' = jen kruhové ikonky (kompaktní)
+  @property({ reflect: true }) public variant: 'bar' | 'chips' = 'bar'
 
   @state() private dialogOpen = false
 
@@ -75,6 +79,15 @@ export class ChmuAlertBar extends LitElement {
       return nothing
     }
     const attrs = entity.attributes
+    const body = this.variant === 'chips' ? this.renderChips(attrs) : this.renderBar(attrs)
+    return html`
+      ${body}
+      ${this.dialogOpen ? this.renderDialog(attrs) : nothing}
+    `
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private renderBar (attrs: Record<string, any>): TemplateResult {
     const count = (attrs.alert_count as number | undefined) ?? 0
     const headline = (attrs.headline as string | undefined) ?? ''
     const icon = (attrs.alert_icon as string | undefined) ?? 'mdi:alert'
@@ -96,7 +109,35 @@ export class ChmuAlertBar extends LitElement {
         </div>
         <ha-icon class="alert-chevron" icon="mdi:chevron-right"></ha-icon>
       </div>
-      ${this.dialogOpen ? this.renderDialog(attrs) : nothing}
+    `
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private renderChips (attrs: Record<string, any>): TemplateResult {
+    const alerts = (attrs.alerts as ChmuAlert[] | undefined) ?? []
+    const shown = alerts.slice(0, MAX_CHIPS)
+    const extra = alerts.length - shown.length
+    const headline = (attrs.headline as string | undefined) ?? ''
+
+    return html`
+      <div
+        class="chips"
+        role="button"
+        tabindex="0"
+        title=${headline}
+        aria-label=${this.countLabel(alerts.length)}
+        @click=${() => { this.dialogOpen = true }}
+        @keydown=${(e: KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') this.dialogOpen = true }}
+      >
+        ${shown.map(a => {
+          const color = SEVERITY_COLORS[a.severity ?? ''] ?? SEVERITY_COLORS.Moderate
+          return html`
+            <span class="chip" style="--chmu-alert-color: ${color}">
+              <ha-icon .icon=${a.icon ?? 'mdi:alert'}></ha-icon>
+            </span>`
+        })}
+        ${extra > 0 ? html`<span class="chip chip-more">+${extra}</span>` : nothing}
+      </div>
     `
   }
 
@@ -159,6 +200,39 @@ export class ChmuAlertBar extends LitElement {
   static readonly styles = css`
     :host {
       display: block;
+    }
+    :host([variant='chips']) {
+      display: inline-flex;
+      margin-left: auto;
+    }
+    .chips {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+    .chips:focus-visible {
+      outline: 2px solid var(--primary-color);
+      border-radius: 12px;
+    }
+    .chip {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: color-mix(in srgb, var(--chmu-alert-color) 18%, transparent);
+    }
+    .chip ha-icon {
+      --mdc-icon-size: 15px;
+      color: var(--chmu-alert-color);
+    }
+    .chip-more {
+      background: color-mix(in srgb, var(--secondary-text-color) 15%, transparent);
+      color: var(--secondary-text-color);
+      font-size: 0.7rem;
+      font-weight: 600;
     }
     .alert-bar {
       display: flex;

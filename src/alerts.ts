@@ -115,13 +115,19 @@ export class ChmuAlertBar extends LitElement {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private renderChips (attrs: Record<string, any>): TemplateResult {
     const alerts = (attrs.alerts as ChmuAlert[] | undefined) ?? []
-    const shown = alerts.slice(0, MAX_CHIPS)
+    // Nad limit necháme místo na chip „+N", ať je mřížka pořád zaplněná
+    const shown = alerts.length > MAX_CHIPS ? alerts.slice(0, MAX_CHIPS - 1) : alerts
     const extra = alerts.length - shown.length
     const headline = (attrs.headline as string | undefined) ?? ''
+    // Mřížka se plní po sloupcích: 1 → jedna ikona, 2 → dvě nad sebou,
+    // 3 → dvě nad sebou + jedna v horním řádku, 4 → 2×2.
+    const total = shown.length + (extra > 0 ? 1 : 0)
+    const rows = total === 1 ? 1 : 2
 
     return html`
       <div
         class="chips"
+        style="--chmu-chip-rows: ${rows}; --chmu-chip-size: ${rows === 1 ? 24 : 20}px"
         role="button"
         tabindex="0"
         title=${headline}
@@ -206,7 +212,10 @@ export class ChmuAlertBar extends LitElement {
       margin-left: auto;
     }
     .chips {
-      display: inline-flex;
+      display: inline-grid;
+      grid-template-rows: repeat(var(--chmu-chip-rows, 1), auto);
+      grid-auto-flow: column;
+      justify-items: center;
       align-items: center;
       gap: 4px;
       cursor: pointer;
@@ -216,8 +225,8 @@ export class ChmuAlertBar extends LitElement {
       border-radius: 12px;
     }
     .chip {
-      width: 24px;
-      height: 24px;
+      width: var(--chmu-chip-size, 24px);
+      height: var(--chmu-chip-size, 24px);
       border-radius: 50%;
       display: inline-flex;
       align-items: center;
@@ -225,8 +234,9 @@ export class ChmuAlertBar extends LitElement {
       background: color-mix(in srgb, var(--chmu-alert-color) 18%, transparent);
     }
     .chip ha-icon {
-      --mdc-icon-size: 15px;
+      --mdc-icon-size: calc(var(--chmu-chip-size, 24px) * 0.63);
       color: var(--chmu-alert-color);
+      display: flex;
     }
     .chip-more {
       background: color-mix(in srgb, var(--secondary-text-color) 15%, transparent);

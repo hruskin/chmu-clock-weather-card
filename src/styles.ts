@@ -181,6 +181,8 @@ export default css`
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: flex-end;
+    text-align: right;
     gap: 0.15rem;
     font-size: 1.25rem;
     font-size: clamp(0.9rem, 4.2cqw, 1.25rem);

@@ -14,8 +14,10 @@ nad sekcí počasí a po kliknutí popup s plnými texty.)*
 
 - `alert_entity` — binary_sensor výstrah z integrace ha-chmu-meteogram
 - **Výstrahy jako ikonky** (`alert_display: icons`, výchozí): kruhové ikonky
-  obarvené podle závažnosti, zabírají nulovou výšku navíc. `alert_display: bar`
-  zobrazí místo nich proužek přes celou šířku s titulkem („Zátěž teplem · Bouřky")
+  obarvené podle závažnosti. Skládají se do mřížky po sloupcích — dvě výstrahy
+  nad sebou, tři jako dvě nad sebou plus jedna v horním řádku, čtyři do 2×2;
+  nad čtyři obsadí poslední pozice „+N". `alert_display: bar` zobrazí místo
+  nich proužek přes celou šířku s titulkem („Zátěž teplem · Bouřky")
 - Klik/tap otevře nativní `ha-dialog` s detailem každé výstrahy:
   název, závažnost, platnost od–do, popis a doporučení
 - **`compact: true`** — horní sekce se smrskne do jednoho řádku: vlevo ikona

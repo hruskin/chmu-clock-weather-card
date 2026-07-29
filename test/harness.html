@@ -35,6 +35,9 @@
   <chmu-clock-weather-card id="realcard"></chmu-clock-weather-card>
 </div>
 
+<h1 style="margin-top:2rem">Mřížka výstrah 1–6</h1>
+<div class="card" id="gridtest" style="display:flex; gap:2rem; align-items:center"></div>
+
 <script>
   // Stubs za HA frontend elementy (v harness nejsou k dispozici)
   customElements.define('ha-icon', class extends HTMLElement {
@@ -135,6 +138,31 @@
       }
     }
   }
+  // --- mřížka pro 1..6 výstrah ---
+  const mk = (n) => Array.from({ length: n }, (_, i) => ({
+    label: 'Jev ' + (i + 1),
+    icon: ['mdi:sun-thermometer', 'mdi:weather-lightning', 'mdi:weather-windy', 'mdi:fire', 'mdi:snowflake-alert', 'mdi:home-flood'][i],
+    severity: ['Moderate', 'Severe', 'Minor', 'Extreme', 'Moderate', 'Severe'][i],
+    description: 'Popis ' + (i + 1),
+    instruction: '', start: null, end: null
+  }))
+  const gt = document.getElementById('gridtest')
+  for (let n = 1; n <= 6; n++) {
+    const box = document.createElement('div')
+    box.style.cssText = 'text-align:center'
+    const el = document.createElement('chmu-alert-bar')
+    el.id = 'grid' + n
+    el.setAttribute('variant', 'chips')
+    el.hass = { states: { ['binary_sensor.g' + n]: { state: 'on', attributes: { alert_count: n, headline: 'test', alerts: mk(n) } } } }
+    el.entityId = 'binary_sensor.g' + n
+    box.appendChild(el)
+    const lbl = document.createElement('div')
+    lbl.textContent = n + '×'
+    lbl.style.cssText = 'font-size:.75rem;color:#888;margin-top:4px'
+    box.appendChild(lbl)
+    gt.appendChild(box)
+  }
+
   const card = document.getElementById('realcard')
   card.setConfig({
     entity: 'weather.test',

@@ -38,6 +38,9 @@
 <h1 style="margin-top:2rem">Mřížka výstrah 1–6</h1>
 <div class="card" id="gridtest" style="display:flex; gap:2rem; align-items:center"></div>
 
+<h1 style="margin-top:2rem">Dešťový chip — stavy</h1>
+<div class="card" id="raintest" style="display:flex; gap:1.5rem; align-items:center; min-height:44px"></div>
+
 <script>
   // Stubs za HA frontend elementy (v harness nejsou k dispozici)
   customElements.define('ha-icon', class extends HTMLElement {
@@ -163,14 +166,59 @@
     gt.appendChild(box)
   }
 
+  // --- dešťový chip: sucho / bude pršet / prší ---
+  const rainStates = (prsi, bude, eta, mmh) => ({
+    states: {
+      'binary_sensor.prsi': { state: prsi, attributes: {} },
+      'binary_sensor.bude': { state: bude, attributes: {} },
+      'sensor.eta': { state: eta, attributes: { unit_of_measurement: 'min' } },
+      'sensor.mmh': { state: mmh, attributes: { unit_of_measurement: 'mm/h' } }
+    }
+  })
+  const rainCases = [
+    ['sucho', rainStates('off', 'off', 'unknown', '0.0')],
+    ['bude pršet', rainStates('off', 'on', '18', '0.0')],
+    ['bude pršet (bez ETA)', rainStates('off', 'on', 'unknown', '0.0')],
+    ['prší', rainStates('on', 'on', 'unknown', '2.4')],
+    ['prší (bez intenzity)', rainStates('on', 'off', 'unknown', 'unknown')],
+    ['za 1 h 5 min', rainStates('off', 'on', '65', '0.0')]
+  ]
+  const rt = document.getElementById('raintest')
+  rainCases.forEach(([label, hs], i) => {
+    const box = document.createElement('div')
+    box.style.cssText = 'text-align:center'
+    const el = document.createElement('chmu-rain-chip')
+    el.id = 'rain' + i
+    el.hass = hs
+    el.rainEntity = 'binary_sensor.prsi'
+    el.rainExpectedEntity = 'binary_sensor.bude'
+    el.rainEtaEntity = 'sensor.eta'
+    el.rainIntensityEntity = 'sensor.mmh'
+    el.locale = 'cs'
+    box.appendChild(el)
+    const lbl = document.createElement('div')
+    lbl.textContent = label
+    lbl.style.cssText = 'font-size:.7rem;color:#888;margin-top:4px'
+    box.appendChild(lbl)
+    rt.appendChild(box)
+  })
+
   const card = document.getElementById('realcard')
   card.setConfig({
     entity: 'weather.test',
     alert_entity: 'binary_sensor.test',
     compact: true,
     locale: 'cs',
-    forecast_rows: 5
+    forecast_rows: 5,
+    rain_entity: 'binary_sensor.prsi',
+    rain_expected_entity: 'binary_sensor.bude',
+    rain_eta_entity: 'sensor.eta',
+    rain_intensity_entity: 'sensor.mmh'
   })
+  cardHass.states['binary_sensor.prsi'] = { state: 'off', attributes: {} }
+  cardHass.states['binary_sensor.bude'] = { state: 'on', attributes: {} }
+  cardHass.states['sensor.eta'] = { state: '18', attributes: { unit_of_measurement: 'min' } }
+  cardHass.states['sensor.mmh'] = { state: '0.0', attributes: { unit_of_measurement: 'mm/h' } }
   card.hass = cardHass
 </script>
 </body>

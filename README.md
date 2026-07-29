@@ -24,6 +24,9 @@ nad sekcí počasí a po kliknutí popup s plnými texty.)*
   počasí a teplota, vpravo blok vlhkost a tlak (poloviční velikost, pod sebou) ·
   ikonky výstrah · hodiny úplně vpravo. Písmo i ikona se plynule přizpůsobují
   šířce karty. Řádky předpovědi zůstávají beze změny
+- **Dešťový nowcast chip** — když meteoradar hlásí déšť nebo se blíží, objeví se
+  úsporná dvouřádková modrá značka („za 18 / min", „2,4 / mm/h"). Když neprší,
+  chip se nezobrazí vůbec a nezabírá místo
 - **GUI editor** — kartu lze nastavit klikáním, bez psaní YAML
 - Bez výstrahy se karta chová přesně jako originál
 - Žádná závislost na browser_mod
@@ -59,6 +62,22 @@ hourly_forecast: true
 | `alert_entity` | — | binary_sensor výstrah; bez něj se výstrahy nezobrazují |
 | `alert_display` | `icons` | `icons` = ikonky, `bar` = proužek přes šířku |
 | `compact` | `false` | jednořádková horní sekce s vlhkostí a tlakem |
+| `rain_entity` | — | binary_sensor „Prší" (radar) |
+| `rain_expected_entity` | — | binary_sensor „Bude pršet" |
+| `rain_eta_entity` | — | sensor „Déšť za" v minutách |
+| `rain_intensity_entity` | — | sensor intenzity srážek v mm/h |
+
+Dešťový chip se objeví, jakmile je nastavená aspoň jedna z entit `rain_entity`
+nebo `rain_expected_entity`. Při dešti ukáže intenzitu, jinak odpočet do deště;
+když příslušný sensor nemá hodnotu, zobrazí prostý text „Prší" / „Bude pršet".
+Entity poskytuje ha-chmu-meteogram, pokud máš zapnuté sledování meteoradaru:
+
+```yaml
+rain_entity: binary_sensor.chmu_home_prsi
+rain_expected_entity: binary_sensor.chmu_home_bude_prset
+rain_eta_entity: sensor.chmu_home_dest_za
+rain_intensity_entity: sensor.chmu_home_intenzita_srazek_radar
+```
 
 Vlhkost a tlak se v compact režimu berou z atributů weather entity
 (`humidity`, `pressure`); pokud je entita nemá, sloupec se nezobrazí.

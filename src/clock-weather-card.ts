@@ -33,6 +33,7 @@ import { version } from '../package.json'
 import { safeRender } from './helpers'
 import { DateTime } from 'luxon'
 import './alerts'
+import './rain'
 import './editor'
 
 console.info(
@@ -266,6 +267,8 @@ export class ClockWeatherCard extends LitElement {
           </clock-weather-card-today-right-wrap-center>
           <clock-weather-card-today-right-wrap-bottom>
             ${this.config.hide_date ? '' : this.date()}
+            <span class="today-chips">
+            ${this.renderRainChip()}
             ${this.config.alert_entity && this.config.alert_display === 'icons'
               ? html`
                 <chmu-alert-bar
@@ -275,6 +278,7 @@ export class ClockWeatherCard extends LitElement {
                   .locale=${this.config.locale}
                 ></chmu-alert-bar>`
               : ''}
+            </span>
           </clock-weather-card-today-right-wrap-bottom>
         </clock-weather-card-today-right-wrap>
       </clock-weather-card-today-right>`
@@ -298,6 +302,7 @@ export class ClockWeatherCard extends LitElement {
       <img class="compact-icon" src=${icon} />
       ${localizedTemp ? html`<div class="compact-temp">${localizedTemp}</div>` : ''}
       <div class="compact-right">
+        ${this.renderRainChip()}
         ${humidity !== null || pressure !== null
           ? html`
             <div class="compact-stack">
@@ -540,8 +545,31 @@ export class ClockWeatherCard extends LitElement {
       apparent_sensor: config.apparent_sensor ?? undefined,
       aqi_sensor: config.aqi_sensor ?? undefined,
       alert_display: config.alert_display ?? 'icons',
-      compact: config.compact ?? false
+      compact: config.compact ?? false,
+      rain_entity: config.rain_entity ?? undefined,
+      rain_expected_entity: config.rain_expected_entity ?? undefined,
+      rain_eta_entity: config.rain_eta_entity ?? undefined,
+      rain_intensity_entity: config.rain_intensity_entity ?? undefined
     }
+  }
+
+  // fork: dešťový nowcast chip — renderuje se jen když je nastavená aspoň
+  // jedna radarová entita (samotný chip se schová, když neprší)
+  private renderRainChip (): TemplateResult | '' {
+    const { rain_entity: rain, rain_expected_entity: expected } = this.config
+    if (!rain && !expected) {
+      return ''
+    }
+    return html`
+      <chmu-rain-chip
+        .hass=${this.hass}
+        .rainEntity=${rain}
+        .rainExpectedEntity=${expected}
+        .rainEtaEntity=${this.config.rain_eta_entity}
+        .rainIntensityEntity=${this.config.rain_intensity_entity}
+        .locale=${this.config.locale}
+      ></chmu-rain-chip>
+    `
   }
 
   private toIcon (weatherState: string, type: 'fill' | 'line', forceDay: boolean, kind: 'static' | 'animated'): string {

@@ -10,8 +10,10 @@ import { type ClockWeatherCardConfig } from './types'
 interface SchemaItem {
   name: string
   required?: boolean
+  type?: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  selector: Record<string, any>
+  selector?: Record<string, any>
+  schema?: SchemaItem[]
 }
 
 const SCHEMA: SchemaItem[] = [
@@ -50,7 +52,17 @@ const SCHEMA: SchemaItem[] = [
   { name: 'hide_clock', selector: { boolean: {} } },
   { name: 'hide_date', selector: { boolean: {} } },
   { name: 'show_humidity', selector: { boolean: {} } },
-  { name: 'show_decimal', selector: { boolean: {} } }
+  { name: 'show_decimal', selector: { boolean: {} } },
+  {
+    name: 'rain',
+    type: 'expandable',
+    schema: [
+      { name: 'rain_entity', selector: { entity: { domain: 'binary_sensor' } } },
+      { name: 'rain_expected_entity', selector: { entity: { domain: 'binary_sensor' } } },
+      { name: 'rain_eta_entity', selector: { entity: { domain: 'sensor' } } },
+      { name: 'rain_intensity_entity', selector: { entity: { domain: 'sensor' } } }
+    ]
+  }
 ]
 
 const LABELS: Record<string, string> = {
@@ -67,7 +79,12 @@ const LABELS: Record<string, string> = {
   hide_clock: 'Skrýt hodiny',
   hide_date: 'Skrýt datum',
   show_humidity: 'Zobrazit vlhkost (plný layout)',
-  show_decimal: 'Teplota s desetinami'
+  show_decimal: 'Teplota s desetinami',
+  rain: 'Dešťový chip (meteoradar)',
+  rain_entity: 'Prší (binary_sensor)',
+  rain_expected_entity: 'Bude pršet (binary_sensor)',
+  rain_eta_entity: 'Déšť za (sensor, min)',
+  rain_intensity_entity: 'Intenzita srážek (sensor, mm/h)'
 }
 
 @customElement('chmu-clock-weather-card-editor')

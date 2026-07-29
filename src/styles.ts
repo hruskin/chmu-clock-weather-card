@@ -131,9 +131,16 @@ export default css`
     border-radius: 5px;
   }
 
-  /* --- fork: řádek s datem nese i ikonky výstrah --- */
+  /* --- fork: řádek s datem nese i dešťový chip a ikonky výstrah --- */
   clock-weather-card-today-right-wrap-bottom {
     align-items: center;
+  }
+
+  .today-chips {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
   }
 
   /* --- fork: kompaktní režim (compact: true) ---
@@ -161,6 +168,7 @@ export default css`
     align-items: center;
     gap: clamp(0.4rem, 2cqw, 0.8rem);
     margin-left: auto;
+    --chmu-rain-font: clamp(0.68rem, 2.9cqw, 0.85rem);
   }
 
   .compact-today .compact-clock-text,
@@ -169,6 +177,17 @@ export default css`
     font-size: clamp(1.7rem, 9.9cqw, 3.45rem);
     line-height: 1.15;
     white-space: nowrap;
+  }
+
+  /* Aktivní dešťový chip ukrojí z řádku šířku — zbytek o kus zmenšíme,
+     ať se vše vejde i na úzké kartě. */
+  .compact-today:has(chmu-rain-chip[active]) .compact-clock-text,
+  .compact-today:has(chmu-rain-chip[active]) .compact-temp {
+    font-size: clamp(1.55rem, 8.8cqw, 3.1rem);
+  }
+
+  .compact-today:has(chmu-rain-chip[active]) .compact-icon {
+    height: clamp(2.1rem, 10cqw, 3.6rem);
   }
 
   .compact-today .compact-icon {

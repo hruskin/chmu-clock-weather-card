@@ -36,6 +36,10 @@ export interface ClockWeatherCardConfig extends LovelaceCardConfig {
   alert_entity?: string
   alert_display?: 'icons' | 'bar'
   compact?: boolean
+  rain_entity?: string
+  rain_expected_entity?: string
+  rain_eta_entity?: string
+  rain_intensity_entity?: string
 }
 
 export interface MergedClockWeatherCardConfig extends LovelaceCardConfig {
@@ -65,6 +69,10 @@ export interface MergedClockWeatherCardConfig extends LovelaceCardConfig {
   alert_entity?: string
   alert_display: 'icons' | 'bar'
   compact: boolean
+  rain_entity?: string
+  rain_expected_entity?: string
+  rain_eta_entity?: string
+  rain_intensity_entity?: string
 }
 
 export const enum WeatherEntityFeature {

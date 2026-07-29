@@ -227,21 +227,18 @@ export class ChmuAlertBar extends LitElement {
     .chip {
       width: var(--chmu-chip-size, 24px);
       height: var(--chmu-chip-size, 24px);
-      border-radius: 50%;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      background: color-mix(in srgb, var(--chmu-alert-color) 18%, transparent);
     }
     .chip ha-icon {
-      --mdc-icon-size: calc(var(--chmu-chip-size, 24px) * 0.63);
+      --mdc-icon-size: var(--chmu-chip-size, 24px);
       color: var(--chmu-alert-color);
       display: flex;
     }
     .chip-more {
-      background: color-mix(in srgb, var(--secondary-text-color) 15%, transparent);
       color: var(--secondary-text-color);
-      font-size: 0.7rem;
+      font-size: calc(var(--chmu-chip-size, 24px) * 0.6);
       font-weight: 600;
     }
     .alert-bar {

@@ -152,7 +152,7 @@ export default css`
   .compact-today {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: clamp(0.3rem, 1.6cqw, 0.7rem);
     margin-bottom: 0.4rem;
   }
 
@@ -166,14 +166,14 @@ export default css`
   .compact-today .compact-clock-text,
   .compact-today .compact-temp {
     font-size: 3rem;
-    font-size: clamp(1.5rem, 8.6cqw, 3rem);
+    font-size: clamp(1.7rem, 9.9cqw, 3.45rem);
     line-height: 1.15;
     white-space: nowrap;
   }
 
   .compact-today .compact-icon {
     height: 3.6rem;
-    height: clamp(2.2rem, 10cqw, 3.6rem);
+    height: clamp(2.5rem, 11.5cqw, 4.15rem);
     width: auto;
   }
 

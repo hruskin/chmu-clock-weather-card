@@ -18,10 +18,10 @@ nad sekcí počasí a po kliknutí popup s plnými texty.)*
   zobrazí místo nich proužek přes celou šířku s titulkem („Zátěž teplem · Bouřky")
 - Klik/tap otevře nativní `ha-dialog` s detailem každé výstrahy:
   název, závažnost, platnost od–do, popis a doporučení
-- **`compact: true`** — horní sekce se smrskne do jednoho řádku: velké hodiny
-  vlevo, vpravo ikonky výstrah · ikona počasí · velká teplota · vlhkost a tlak
-  (poloviční velikost, pod sebou). Písmo se plynule přizpůsobuje šířce karty.
-  Řádky předpovědi zůstávají beze změny
+- **`compact: true`** — horní sekce se smrskne do jednoho řádku: vlevo ikona
+  počasí a teplota, vpravo blok vlhkost a tlak (poloviční velikost, pod sebou) ·
+  ikonky výstrah · hodiny úplně vpravo. Písmo i ikona se plynule přizpůsobují
+  šířce karty. Řádky předpovědi zůstávají beze změny
 - **GUI editor** — kartu lze nastavit klikáním, bez psaní YAML
 - Bez výstrahy se karta chová přesně jako originál
 - Žádná závislost na browser_mod

@@ -295,10 +295,9 @@ export class ClockWeatherCard extends LitElement {
     const pressureUnit = extraAttrs.pressure_unit ?? 'hPa'
 
     return html`
-      ${this.config.hide_clock ? '' : html`<div class="compact-clock-text">${this.time()}</div>`}
+      <img class="compact-icon" src=${icon} />
+      ${localizedTemp ? html`<div class="compact-temp">${localizedTemp}</div>` : ''}
       <div class="compact-right">
-        <img class="compact-icon" src=${icon} />
-        ${localizedTemp ? html`<div class="compact-temp">${localizedTemp}</div>` : ''}
         ${humidity !== null || pressure !== null
           ? html`
             <div class="compact-stack">
@@ -315,6 +314,7 @@ export class ClockWeatherCard extends LitElement {
               .locale=${this.config.locale}
             ></chmu-alert-bar>`
           : ''}
+        ${this.config.hide_clock ? '' : html`<div class="compact-clock-text">${this.time()}</div>`}
       </div>
     `
   }

@@ -319,7 +319,7 @@ export class ClockWeatherCard extends LitElement {
               .locale=${this.config.locale}
             ></chmu-alert-bar>`
           : ''}
-        ${this.config.hide_clock ? '' : html`<div class="compact-clock-text">${this.time()}</div>`}
+        ${this.config.hide_clock ? '' : html`<div class="compact-clock-text">${this.compactTime()}</div>`}
       </div>
     `
   }
@@ -668,6 +668,14 @@ export class ClockWeatherCard extends LitElement {
 
   private date (): string {
     return this.toZonedDate(this.currentDate).toFormat(this.config.date_pattern)
+  }
+
+  // fork: compact řádek chce h:mm, ne HH:mm — vedoucí nulu ubereme až po
+  // naformátování, ať zůstane respektované 12/24h nastavení i locale.
+  // Vlastní time_pattern od uživatele necháváme být.
+  private compactTime (): string {
+    const formatted = this.time()
+    return this.config.time_pattern ? formatted : formatted.replace(/^0(?=\d)/, '')
   }
 
   private time (date: DateTime = this.currentDate): string {

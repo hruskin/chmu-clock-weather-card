@@ -56,20 +56,28 @@ export class ChmuAlertBar extends LitElement {
 
   @state() private dialogOpen = false
 
-  // Karta (ha-card) má vlastní action handler (tap = more-info počasí).
-  // Kliky uvnitř alert baru i dialogu nesmí probublat, jinak se otevřou
-  // dva popupy najednou.
+  // Karta (ha-card) má vlastní action handler, který poslouchá mouse i touch
+  // události a v touchend volá preventDefault() — bez odstínění dotyku by se
+  // na mobilu otevřelo more-info počasí a náš dialog by se vůbec nespustil,
+  // protože syntetický click už nepřijde.
   private readonly stopProp = (e: Event): void => { e.stopPropagation() }
+
+  private static readonly BLOCKED_EVENTS = [
+    'click', 'keydown', 'keyup',
+    'mousedown', 'touchstart', 'touchend', 'touchcancel'
+  ]
 
   public connectedCallback (): void {
     super.connectedCallback()
-    this.addEventListener('click', this.stopProp)
-    this.addEventListener('keydown', this.stopProp)
+    for (const type of ChmuAlertBar.BLOCKED_EVENTS) {
+      this.addEventListener(type, this.stopProp)
+    }
   }
 
   public disconnectedCallback (): void {
-    this.removeEventListener('click', this.stopProp)
-    this.removeEventListener('keydown', this.stopProp)
+    for (const type of ChmuAlertBar.BLOCKED_EVENTS) {
+      this.removeEventListener(type, this.stopProp)
+    }
     super.disconnectedCallback()
   }
 

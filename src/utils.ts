@@ -34,6 +34,16 @@ export function roundIfNotNull (number: number | null): number | null {
 
   return Math.round(number)
 }
+
+// fork: se show_decimal chceme jedno desetinné místo, ne surovou hodnotu
+// čidla (19,5333 °C) ani zbytky po převodu jednotek.
+export function roundToTenthIfNotNull (number: number | null): number | null {
+  if (number === null) {
+    return null
+  }
+
+  return Math.round(number * 10) / 10
+}
 // from https://stackoverflow.com/a/1053865
 export function extractMostOccuring<T extends string | number | symbol> (elements: T[]): T {
   const modeMap = new Map<T, number>()

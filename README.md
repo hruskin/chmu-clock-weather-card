@@ -27,7 +27,8 @@ nad sekcí počasí a po kliknutí popup s plnými texty.)*
 - **Dešťový nowcast chip** — když meteoradar hlásí déšť nebo se blíží, objeví se
   úsporná dvouřádková modrá značka („za 18 / min", „2,4 / mm/h"). Když neprší,
   chip se nezobrazí vůbec a nezabírá místo
-- **GUI editor** — kartu lze nastavit klikáním, bez psaní YAML
+- **GUI editor** — kartu lze nastavit klikáním, bez psaní YAML, včetně
+  vlastních čidel teploty a vlhkosti a entit dešťového chipu
 - Bez výstrahy se karta chová přesně jako originál
 - Žádná závislost na browser_mod
 

@@ -54,6 +54,20 @@ const SCHEMA: SchemaItem[] = [
   { name: 'show_humidity', selector: { boolean: {} } },
   { name: 'show_decimal', selector: { boolean: {} } },
   {
+    name: 'sensors',
+    type: 'expandable',
+    schema: [
+      {
+        name: 'temperature_sensor',
+        selector: { entity: { domain: 'sensor', device_class: 'temperature' } }
+      },
+      {
+        name: 'humidity_sensor',
+        selector: { entity: { domain: 'sensor', device_class: 'humidity' } }
+      }
+    ]
+  },
+  {
     name: 'rain',
     type: 'expandable',
     schema: [
@@ -80,6 +94,9 @@ const LABELS: Record<string, string> = {
   hide_date: 'Skrýt datum',
   show_humidity: 'Zobrazit vlhkost (plný layout)',
   show_decimal: 'Teplota s desetinami',
+  sensors: 'Vlastní čidla',
+  temperature_sensor: 'Čidlo teploty (místo hodnoty z modelu)',
+  humidity_sensor: 'Čidlo vlhkosti (místo hodnoty z modelu)',
   rain: 'Dešťový chip (meteoradar)',
   rain_entity: 'Prší (binary_sensor)',
   rain_expected_entity: 'Bude pršet (binary_sensor)',

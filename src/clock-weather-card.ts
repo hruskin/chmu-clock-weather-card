@@ -27,7 +27,7 @@ import styles from './styles'
 import { actionHandler } from './action-handler-directive'
 import { localize } from './localize/localize'
 import { type HassEntity, type HassEntityBase } from 'home-assistant-js-websocket'
-import { extractMostOccuring, max, min, roundIfNotNull, roundUp } from './utils'
+import { extractMostOccuring, max, min, roundIfNotNull, roundToTenthIfNotNull, roundUp } from './utils'
 import { animatedIcons, staticIcons } from './images'
 import { version } from '../package.json'
 import { safeRender } from './helpers'
@@ -234,9 +234,13 @@ export class ClockWeatherCard extends LitElement {
   private renderToday (): TemplateResult {
     const weather = this.getWeather()
     const state = weather.state
-    const temp = this.config.show_decimal ? this.getCurrentTemperature() : roundIfNotNull(this.getCurrentTemperature())
+    const temp = this.config.show_decimal
+      ? roundToTenthIfNotNull(this.getCurrentTemperature())
+      : roundIfNotNull(this.getCurrentTemperature())
     const tempUnit = weather.attributes.temperature_unit
-    const apparentTemp = this.config.show_decimal ? this.getApparentTemperature() : roundIfNotNull(this.getApparentTemperature())
+    const apparentTemp = this.config.show_decimal
+      ? roundToTenthIfNotNull(this.getApparentTemperature())
+      : roundIfNotNull(this.getApparentTemperature())
     const aqi = this.getAqi()
     const aqiBackgroundColor = this.getAqiBackgroundColor(aqi)
     const aqiTextColor = this.getAqiTextColor(aqi)
@@ -288,7 +292,9 @@ export class ClockWeatherCard extends LitElement {
   private renderTodayCompact (): TemplateResult {
     const weather = this.getWeather()
     const state = weather.state
-    const temp = this.config.show_decimal ? this.getCurrentTemperature() : roundIfNotNull(this.getCurrentTemperature())
+    const temp = this.config.show_decimal
+      ? roundToTenthIfNotNull(this.getCurrentTemperature())
+      : roundIfNotNull(this.getCurrentTemperature())
     const tempUnit = weather.attributes.temperature_unit
     const iconType = this.config.weather_icon_type
     const icon = this.toIcon(state, iconType, false, this.getIconAnimationKind())

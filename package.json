@@ -1,6 +1,6 @@
 {
   "name": "chmu-clock-weather-card",
-  "version": "1.5.3",
+  "version": "1.6.0",
   "description": "Fork of clock-weather-card with CHMU weather alerts support",
   "keywords": [
     "home-assistant",
